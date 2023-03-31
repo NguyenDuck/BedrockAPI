@@ -2,10 +2,12 @@ package nguyenduck.manifest.modules;
 
 import nguyenduck.manifest.modules.module.Module;
 import nguyenduck.utils.Property;
+import nguyenduck.utils.Required;
 
 public class Modules extends Property {
 
-    private Module[] value;
+    @Required
+    public Module[] value;
 
     public Modules() {
         super("modules");

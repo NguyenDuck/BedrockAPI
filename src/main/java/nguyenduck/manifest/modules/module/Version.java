@@ -9,6 +9,4 @@ public class Version extends Property {
         setValue(new Integer[]{1, 0, 0});
     }
 
-
-
 }

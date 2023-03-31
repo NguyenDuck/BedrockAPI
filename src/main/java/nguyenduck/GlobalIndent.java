@@ -18,4 +18,8 @@ public class GlobalIndent {
         }
         return sb.toString();
     }
+
+    public static void reset() {
+        value = 0;
+    }
 }

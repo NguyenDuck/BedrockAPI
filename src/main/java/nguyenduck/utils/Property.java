@@ -9,7 +9,8 @@ import nguyenduck.exceptions.MissingPropertyException;
 
 import java.lang.reflect.Field;
 
-public class Property implements Compilable, Jsonable {
+public abstract class Property implements Compilable, Jsonable {
+
     private final String propName;
     private Object value;
 
@@ -38,17 +39,25 @@ public class Property implements Compilable, Jsonable {
         for (Field field : this.getClass().getFields()) {
             System.out.println(GlobalIndent.get() + field.getName());
 
-            Compilable compiler = (Compilable) field.get(this);
-            if (compiler == null) continue;
-            compiler.compile();
+            Object fieldinstance = field.get(this);
 
-            Property property = (Property) compiler;
-            if (!(value instanceof JsonObject)) value = new JsonObject();
-            ((JsonObject) value).add((property.getName()), property.asJsonElement());
-            Required annotation = field.getAnnotation(Required.class);
-            if (annotation != null) {
-                field.setAccessible(true);
-                if (!property.validate()) throw new MissingPropertyException(field);
+            if (fieldinstance instanceof Compilable) {
+                Compilable compiler = (Compilable) field.get(this);
+                if (compiler == null) continue;
+                compiler.compile();
+
+                Property property = (Property) compiler;
+                if (!(value instanceof JsonObject)) value = new JsonObject();
+                ((JsonObject) value).add((property.getName()), property.asJsonElement());
+                Required annotation = field.getAnnotation(Required.class);
+                if (annotation != null) {
+                    field.setAccessible(true);
+                    if (!property.validate()) throw new MissingPropertyException(field);
+                }
+            } else if (fieldinstance instanceof Compilable[]) {
+                Compilable[] compilers = (Compilable[]) field.get(this);
+                if (compilers == null) continue;
+                for (Compilable compiler : compilers) compiler.compile();
             }
         }
         GlobalIndent.del();

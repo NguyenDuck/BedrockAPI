@@ -37,12 +37,9 @@ public class CJsonObject implements Compilable, Jsonable {
         GlobalIndent.del();
     }
 
+    @Override
     public JsonElement asJsonElement() {
-        try {
-            compile();
-            return value;
-        } catch (IllegalAccessException ignored) {}
-        return new JsonObject();
+        return value;
     }
 
     private Integer getPriority(Field field) {
